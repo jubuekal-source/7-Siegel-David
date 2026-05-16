@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Für David</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a12;color:#e8e0d4;font-family:'Lora',Georgia,serif;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased}
+#app{max-width:520px;margin:0 auto;padding:0 0 60px}
+.screen{display:none}.screen.active{display:block;animation:fadeUp .9s ease-out}
+button{font-family:'Lora',Georgia,serif;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{text-shadow:0 0 20px rgba(212,175,85,.4)}50%{text-shadow:0 0 50px rgba(212,175,85,.7),0 0 80px rgba(212,175,85,.3)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes sealBreak{0%{transform:scale(1);opacity:1}40%{transform:scale(1.4);opacity:1}100%{transform:scale(0);opacity:0}}
+@keyframes chestGlow{0%{filter:drop-shadow(0 0 10px rgba(212,175,85,.3))}100%{filter:drop-shadow(0 0 40px rgba(212,175,85,.8))}}
+@keyframes shakeIt{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-6px)}20%,40%,60%,80%{transform:translateX(6px)}}
+@keyframes crackPulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes smokeRise{0%{transform:translateY(0) scale(1);opacity:.6}100%{transform:translateY(-60px) scale(2);opacity:0}}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cfall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes af{0%,100%{background:rgba(160,50,20,.85)}50%{background:rgba(200,60,20,.95)}}
+@keyframes burn{0%{opacity:1;filter:brightness(1)}30%{filter:brightness(2)}60%{filter:brightness(4) saturate(3)}80%{filter:brightness(2) hue-rotate(40deg)}100%{opacity:0;filter:brightness(0)}}
+@keyframes gli{0%{transform:translate(0)}25%{transform:translate(-3px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,3px)}100%{transform:translate(0)}}
+@keyframes revealGlow{0%{opacity:0;filter:blur(20px)}100%{opacity:1;filter:blur(0)}}
+@keyframes starTwinkle{0%,100%{opacity:.2}50%{opacity:.8}}
+@keyframes floatUp{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+
+.hf{font-family:'Cinzel',serif}
+.progress-bar{height:3px;background:rgba(212,175,85,.12);border-radius:2px;margin:0 20px 12px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#8b6914,#d4af55,#f0d88a);transition:width .7s ease}
+.quiz-btn{padding:14px 18px;font-size:15px;line-height:1.5;text-align:left;color:#e8e0d4;border-radius:10px;background:rgba(212,175,85,.06);border:1px solid rgba(212,175,85,.15);display:flex;align-items:flex-start;gap:12px;width:100%;transition:all .3s;font-family:'Lora',Georgia,serif}
+.quiz-btn:hover{background:rgba(212,175,85,.12);border-color:rgba(212,175,85,.3)}
+.quiz-btn:active{transform:scale(.98)}
+.quiz-btn.correct{background:rgba(85,180,85,.2);border-color:rgba(85,180,85,.6);pointer-events:none}
+.quiz-btn.wrong{background:rgba(200,60,40,.2);border-color:rgba(200,60,40,.5);pointer-events:none;animation:shakeIt .5s ease}
+.quiz-btn.disabled{pointer-events:none;opacity:.5}
+.quiz-btn .letter{color:#d4af55;font-family:'Cinzel',serif;font-weight:700;font-size:14px;min-width:20px;margin-top:1px}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:10000}
+.pbtn{padding:16px 36px;font-size:16px;font-weight:600;color:#0a0a12;border-radius:10px;border:none;background:linear-gradient(135deg,#d4af55,#f0d88a,#d4af55);box-shadow:0 4px 24px rgba(212,175,85,.4);letter-spacing:1px;font-family:'Cinzel',serif;text-transform:uppercase}
+.pbtn:active{transform:scale(.96)}
+.explanation{margin-top:16px;padding:16px 18px;background:rgba(212,175,85,.08);border:1px solid rgba(212,175,85,.15);border-radius:12px;animation:slideDown .5s ease-out}
+.explanation p{font-size:14px;line-height:1.7;color:#c8bfaa}
+.explanation .verse{font-style:italic;color:#d4af55;margin:8px 0;font-size:13px;line-height:1.6;display:block}
+.explanation .source{font-size:12px;color:#8a7f6a;font-style:normal}
+.fail-counter{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.fail-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(200,60,40,.4);transition:all .4s}
+.fail-dot.used{background:rgba(200,60,40,.7);border-color:rgba(200,60,40,.8);box-shadow:0 0 8px rgba(200,60,40,.4)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── AUDIO ENGINE ──────────────────────────
+var audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(f,d,t,v){try{var c=getAudio(),o=c.createOscillator(),g=c.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.value=v||.2;g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+d);}catch(e){}}
+function sfxCorrect(){playTone(523,.12,'sine',.2);setTimeout(function(){playTone(659,.12,'sine',.2);},100);setTimeout(function(){playTone(784,.2,'sine',.2);},200);}
+function sfxWrong(){playTone(200,.3,'sawtooth',.15);}
+function sfxSealBreak(){playTone(800,.08,'sine',.15);setTimeout(function(){playTone(1200,.15,'sine',.2);},80);setTimeout(function(){playTone(1600,.2,'sine',.15);},160);}
+function sfxAlarm(){playTone(440,.12,'square',.2);setTimeout(function(){playTone(330,.12,'square',.2);},130);setTimeout(function(){playTone(440,.12,'square',.2);},260);}
+function sfxDestruct(){for(var i=0;i<8;i++){(function(j){setTimeout(function(){playTone(80+Math.random()*250,.2,'sawtooth',.12);},j*180);})(i);}}
+function sfxFanfare(){var n=[523,659,784,1047,784,1047];var t=[0,130,260,400,650,800];var d=[.1,.1,.1,.22,.1,.35];for(var i=0;i<n.length;i++){(function(a,b,c){setTimeout(function(){playTone(a,c,'sine',.2);},b);})(n[i],t[i],d[i]);}}
+function sfxChestOpen(){playTone(400,.3,'sine',.15);setTimeout(function(){playTone(600,.3,'sine',.2);},200);setTimeout(function(){playTone(800,.4,'sine',.25);},400);setTimeout(function(){playTone(1200,.5,'sine',.2);},600);}
+
+// ─── DATA ──────────────────────────────────
+var QUESTIONS=[
+{
+  q:'Jesus sagt: „Meinen Frieden gebe ich euch." Das hebräische Wort Shalom bedeutet...',
+  opts:['Innere Ruhe und die Abwesenheit von Sorgen','Ganzheit, Heilsein, Wohlergehen und Wiederherstellung in jedem Lebensbereich','Versöhnung zwischen Gott und Mensch','Frieden mit Gott durch Vergebung der Sünden'],
+  answer:1,
+  expl:'Shalom geht im Hebräischen weit über unser deutsches „Frieden" hinaus. Es beschreibt Ganzheit, Unversehrtheit, körperliche Gesundheit, geistiges Wohlergehen und Wiederherstellung in jedem Bereich des Lebens. Wenn Jesus sagt „Meinen Frieden gebe ich euch" (Johannes 14,27), dann schenkt er nicht bloß ein gutes Gefühl — er schenkt dir ein Leben in göttlicher Ganzheit.',
+  verses:'„Den Frieden lasse ich euch, meinen Frieden gebe ich euch. Nicht gebe ich euch, wie die Welt gibt." — Johannes 14,27'
+},
+{
+  q:'„Es ist vollbracht" – das griechische Wort tetelestai war im antiken Alltag ein gebräuchlicher Begriff. Wofür?',
+  opts:['Für die letzten Worte eines Sterbenden','Für den Abschluss eines religiösen Opferrituals','Für einen Vermerk auf Rechnungen: „Bezahlt – in voller Höhe"'],
+  answer:2,
+  expl:'Tetelestai war ein kaufmännischer Begriff, der auf Rechnungen geschrieben wurde, wenn eine Schuld vollständig beglichen war: „Bezahlt — in voller Höhe." Als Jesus dieses Wort am Kreuz ausrief, erklärte er: Deine gesamte Schuld ist nicht „in Bearbeitung" — sie ist restlos bezahlt. Es gibt keinen offenen Posten mehr.',
+  verses:'„Als nun Jesus den Essig genommen hatte, sprach er: Es ist vollbracht! Und er neigte das Haupt und übergab den Geist." — Johannes 19,30'
+},
+{
+  q:'Laut 1. Johannes 3,8 ist der Sohn Gottes erschienen, um...',
+  opts:['Die Werke des Teufels zu zerstören','Die Menschen zur Umkehr zu rufen','Den Menschen zu zeigen, wie Gott lebt','Die Sünder von den Gerechten zu trennen'],
+  answer:0,
+  expl:'Jesus kam nicht in erster Linie, um zu richten oder Regeln aufzustellen. Er kam, um zu zerstören, was der Feind angerichtet hat — und um Leben in Fülle zu bringen. Stehlen, Schlachten, Verderben: das ist Satans Handschrift. Jesus bringt das Gegenteil: Wiederherstellung, Freiheit, Leben.',
+  verses:'„Dazu ist der Sohn Gottes erschienen, dass er die Werke des Teufels zerstöre." — 1. Johannes 3,8\n\n„Ich bin gekommen, damit sie das Leben haben und es in Fülle haben." — Johannes 10,10'
+},
+{
+  q:'Römer 5,19: „Durch den Gehorsam des Einen werden die Vielen zu ___ gemacht."',
+  opts:['Begnadigten','Gerechten','Erretteten'],
+  answer:1,
+  expl:'Nicht Begnadigte. Nicht Errettete. Gerechte. Das ist ein fundamentaler Unterschied: Ein Begnadigter ist ein Schuldiger, dem die Strafe erlassen wurde. Ein Gerechter ist jemand, der vor Gott so dasteht, als hätte er nie gesündigt. Und genau das bist du in Christus — nicht auf Bewährung, sondern durch seine Tat.',
+  verses:'„Denn wie durch des einen Menschen Ungehorsam die Vielen zu Sündern geworden sind, so werden auch durch den Gehorsam des Einen die Vielen zu Gerechten gemacht." — Römer 5,19'
+},
+{
+  q:'Hebräer 10,14: „Denn mit einem Opfer hat er die, die geheiligt werden, ___."',
+  opts:['Auf den Weg der Heiligung gebracht','Unter seine Gnade gestellt','Für immer vollkommen gemacht','Zum Glauben befähigt'],
+  answer:2,
+  expl:'Nicht „auf den Weg gebracht" — nicht „unter Gnade gestellt" — nicht „befähigt". Für immer vollkommen gemacht. Das ist keine Übertreibung, das ist ein Zitat. Ein Opfer. Für immer. Vollkommen. Dieses Werk hängt nicht davon ab, wie gut du glaubst oder wie wenig du sündigst. Es hängt an dem, der es vollbracht hat.',
+  verses:'„Denn mit einem Opfer hat er die, die geheiligt werden, für immer vollkommen gemacht." — Hebräer 10,14'
+},
+{
+  q:'2. Korinther 5,21: „...damit wir in ihm ___ würden."',
+  opts:['Gottes Gerechtigkeit','Gottes Kinder','Gottes Diener'],
+  answer:0,
+  expl:'Nicht Diener. Nicht einmal „nur" Kinder — obwohl auch das wahr ist. Dieser Vers sagt etwas so Radikales, dass man es kaum fassen kann: Du bist in Christus Gottes Gerechtigkeit selbst geworden. Nicht jemand, der versucht, gerecht zu werden. Nicht jemand, dem Gerechtigkeit zugesprochen wird. Du BIST sie — in ihm.',
+  verses:'„Denn er hat den, der von keiner Sünde wusste, für uns zur Sünde gemacht, damit wir in ihm Gottes Gerechtigkeit würden." — 2. Korinther 5,21'
+},
+{
+  q:'Als Jesus am Kreuz für unsere Sünden starb – für welche genau?',
+  opts:['Für alle Sünden bis zum Moment unserer Bekehrung','Für jede einzelne – vergangene, gegenwärtige und zukünftige – ohne Ausnahme','Für alle vergangenen, und für zukünftige wenn wir sie bereuen'],
+  answer:1,
+  expl:'Denk kurz nach: Als Jesus vor 2000 Jahren am Kreuz starb — wie viele deiner Sünden lagen da in der Zukunft? Alle. Jede einzelne. Er wusste um jede davon und trug sie trotzdem. Es gibt keine Sünde, die er „übersehen" hat, und keine, die erst durch deine Reue aktiviert wird.\n\nDas bedeutet nicht, dass Sünde egal ist. Es bedeutet, dass deine Rettung nicht an deiner Leistung hängt. Nicht an deiner Fähigkeit, jede Sünde rechtzeitig zu bekennen. Nicht daran, ob du „genug" bereust. Deine Rettung hängt an dem, was Jesus ein für alle Mal vollbracht hat.\n\nDie Sorge „Was wenn ich sündige und es nicht mehr bereue, bevor ich sterbe?" setzt voraus, dass Jesu Opfer nicht ausreicht — dass du noch etwas hinzufügen musst. Aber genau das widerspricht dem Evangelium.',
+  verses:'„Denn mit einem Opfer hat er die, die geheiligt werden, für immer vollkommen gemacht." — Hebräer 10,14\n\n„Wenn wir aber im Licht wandeln, wie er im Licht ist, so haben wir Gemeinschaft miteinander, und das Blut Jesu, seines Sohnes, reinigt uns von aller Sünde." — 1. Johannes 1,7\n\n„Denn ich bin gewiss, dass weder Tod noch Leben, weder Engel noch Mächte, weder Gegenwärtiges noch Zukünftiges, noch Gewalten, weder Höhe noch Tiefe, noch irgendein anderes Geschöpf uns zu scheiden vermag von der Liebe Gottes, die in Christus Jesus ist, unserem Herrn." — Römer 8,38–39'
+}
+];
+
+var MAX_FAILS=3;
+
+// ─── STATE ─────────────────────────────────
+var state={screen:'landing',step:0,fails:0,totalFails:0,graceShown:false,answered:false};
+
+// ─── HELPERS ───────────────────────────────
+function $(id){return document.getElementById(id)}
+function show(id){var a=document.querySelectorAll('.screen');for(var i=0;i<a.length;i++)a[i].classList.remove('active');var e=$(id);if(e){e.classList.add('active');e.style.animation='none';e.offsetHeight;e.style.animation='fadeUp .9s ease-out';}}
+function nl2br(s){return s.replace(/\n/g,'<br>');}
+
+// ─── TREASURE CHEST SVG ────────────────────
+function chestSVG(sealsOpen){
+  var total=QUESTIONS.length;
+  var brightness=Math.floor(sealsOpen/total*100);
+  var glowIntensity=sealsOpen/total;
+  var bgDark='hsl(30,'+Math.floor(5+brightness*.15)+'%,'+Math.floor(4+brightness*.06)+'%)';
+
+  // Stars
+  var stars='';
+  var starData=[[60,25],[180,15],[350,40],[420,20],[90,60],[300,55],[450,70],[150,50],[500,30],[30,45]];
+  for(var s=0;s<starData.length;s++){
+    stars+='<circle cx="'+starData[s][0]+'" cy="'+starData[s][1]+'" r="1" fill="#d4af55" opacity="0.3"><animate attributeName="opacity" values="0.1;0.6;0.1" dur="'+(2.5+s*.4)+'s" repeatCount="indefinite"/></circle>';
+  }
+
+  // Ground glow
+  var groundGlow=glowIntensity>.1?'<ellipse cx="260" cy="340" rx="'+(100+glowIntensity*80)+'" ry="'+(20+glowIntensity*15)+'" fill="rgba(212,175,85,'+(glowIntensity*.25)+')"/>':'';
+
+  // Chest body
+  var chestColor1=glowIntensity<.5?'#3a2a1a':'hsl(35,'+(40+glowIntensity*30)+'%,'+(18+glowIntensity*20)+'%)';
+  var chestColor2=glowIntensity<.5?'#2a1a0a':'hsl(30,'+(35+glowIntensity*25)+'%,'+(12+glowIntensity*15)+'%)';
+  var metalColor='hsl(42,'+(30+glowIntensity*50)+'%,'+(30+glowIntensity*35)+'%)';
+
+  // Seals
+  var sealsH='';
+  var sealPositions=[[140,205],[185,205],[230,205],[275,205],[320,205],[365,205],[410,205]];
+  for(var i=0;i<total;i++){
+    var sx=sealPositions[i][0],sy=sealPositions[i][1];
+    if(i<sealsOpen){
+      // Broken seal - particles
+      sealsH+='<g opacity="0.3"><circle cx="'+(sx-3)+'" cy="'+(sy-8)+'" r="2" fill="#d4af55"><animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/></circle>'
+        +'<circle cx="'+(sx+4)+'" cy="'+(sy-12)+'" r="1.5" fill="#f0d88a"><animate attributeName="opacity" values="0.2;0;0.2" dur="2.5s" repeatCount="indefinite"/></circle></g>';
+    } else {
+      // Intact seal
+      sealsH+='<g><circle cx="'+sx+'" cy="'+sy+'" r="10" fill="#8b1a1a" stroke="#d4af55" stroke-width="1.5"/>'
+        +'<text x="'+sx+'" y="'+(sy+4)+'" text-anchor="middle" font-size="10" fill="#d4af55" font-family="Cinzel,serif">'+(i+1)+'</text></g>';
+    }
+  }
+
+  // Lid (opens progressively)
+  var lidAngle=sealsOpen>=total?-35:0;
+  var lidY=sealsOpen>=total?-20:0;
+
+  // Light rays from inside (when all seals broken)
+  var rays='';
+  if(sealsOpen>=total){
+    for(var r=0;r<8;r++){
+      var angle=-80+r*20;
+      var rx=260+Math.cos(angle*Math.PI/180)*120;
+      var ry=200+Math.sin(angle*Math.PI/180)*80;
+      rays+='<line x1="260" y1="230" x2="'+rx+'" y2="'+ry+'" stroke="rgba(240,216,138,0.3)" stroke-width="2"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="'+(1.5+r*.2)+'s" repeatCount="indefinite"/></line>';
+    }
+  }
+
+  return '<svg viewBox="0 0 520 380" style="width:100%;max-width:520px;display:block;margin:0 auto">'
+    +'<defs>'
+    +'<linearGradient id="chestGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+chestColor1+'"/><stop offset="100%" stop-color="'+chestColor2+'"/></linearGradient>'
+    +'<radialGradient id="innerGlow" cx="50%" cy="50%"><stop offset="0%" stop-color="#f0d88a" stop-opacity="'+(glowIntensity*.6)+'"/><stop offset="100%" stop-color="#d4af55" stop-opacity="0"/></radialGradient>'
+    +'<filter id="gf"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'</defs>'
+    +'<rect width="520" height="380" fill="'+bgDark+'"/>'
+    +stars+groundGlow+rays
+    // Chest base
+    +'<rect x="130" y="230" width="280" height="100" rx="6" fill="url(#chestGrad)" stroke="'+metalColor+'" stroke-width="2"/>'
+    // Metal bands
+    +'<rect x="130" y="255" width="280" height="4" fill="'+metalColor+'" opacity=".6"/>'
+    +'<rect x="130" y="300" width="280" height="4" fill="'+metalColor+'" opacity=".6"/>'
+    // Lock plate
+    +'<rect x="248" y="265" width="44" height="30" rx="4" fill="'+metalColor+'" opacity=".5"/>'
+    +'<circle cx="270" cy="280" r="6" fill="none" stroke="'+chestColor2+'" stroke-width="2"/>'
+    // Inner glow
+    +(sealsOpen>0?'<ellipse cx="270" cy="230" rx="'+(80+glowIntensity*40)+'" ry="'+(10+glowIntensity*8)+'" fill="url(#innerGlow)"/>':'')
+    // Lid
+    +'<g transform="translate(270,230) rotate('+lidAngle+') translate(-270,-230)">'
+    +'<path d="M130,230 L130,190 Q130,170 150,165 L390,165 Q410,170 410,190 L410,230 Z" fill="url(#chestGrad)" stroke="'+metalColor+'" stroke-width="2" transform="translate(0,'+lidY+')"/>'
+    +'<rect x="130" y="'+(195+lidY)+'" width="280" height="4" fill="'+metalColor+'" opacity=".6"/>'
+    +'</g>'
+    // Seals
+    +sealsH
+    // Corner ornaments
+    +'<circle cx="140" cy="240" r="5" fill="'+metalColor+'" opacity=".5"/>'
+    +'<circle cx="400" cy="240" r="5" fill="'+metalColor+'" opacity=".5"/>'
+    +'<circle cx="140" cy="320" r="5" fill="'+metalColor+'" opacity=".5"/>'
+    +'<circle cx="400" cy="320" r="5" fill="'+metalColor+'" opacity=".5"/>'
+    +'</svg>';
+}
+
+// ─── CONFETTI ──────────────────────────────
+function showConfetti(){var c=document.createElement('div');c.id='confetti-box';c.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;overflow:hidden';var cols=['#d4af55','#f0d88a','#8b6914','#e8c547','#fff8dc','#c19a3e','#ffd700'];for(var i=0;i<45;i++){var p=document.createElement('div');var sz=4+Math.random()*8;p.style.cssText='position:absolute;left:'+Math.random()*100+'%;top:-20px;width:'+sz+'px;height:'+(sz*.6)+'px;background:'+cols[i%cols.length]+';border-radius:'+(i%3===0?'50%':'2px')+';animation:cfall '+(2+Math.random()*2)+'s ease-in '+(Math.random()*1.5)+'s both';c.appendChild(p);}document.body.appendChild(c);}
+
+// ─── ALARM OVERLAY ─────────────────────────
+function showAlarm(failCount){
+  var ov=document.createElement('div');ov.id='alarm-ov';ov.className='overlay';
+  if(failCount>=MAX_FAILS && !state.graceShown){
+    state.graceShown=true;
+    sfxDestruct();
+    ov.style.background='#000';
+    ov.innerHTML='<div style="animation:burn 4.5s ease-in forwards;text-align:center">'
+      +'<div style="font-size:70px;animation:gli .1s infinite">💥</div>'
+      +'<div style="font-family:\'Courier New\',monospace;font-size:22px;color:#ff4400;animation:gli .1s infinite;text-shadow:0 0 20px red">GUTSCHEIN WIRD VERNICHTET...</div></div>';
+    document.body.appendChild(ov);
+    setTimeout(function(){
+      ov.style.background='rgba(0,0,0,.97)';ov.style.cursor='pointer';
+      ov.innerHTML='<div style="text-align:center;padding:24px;max-width:440px;animation:fadeUp .8s ease-out">'
+        +'<div style="font-size:40px;margin-bottom:20px">✝️</div>'
+        +'<p style="font-family:\'Lora\',serif;font-size:16px;color:#d4af55;line-height:1.8;margin-bottom:12px">Weißt du, was das Schöne ist?</p>'
+        +'<p style="font-family:\'Lora\',serif;font-size:15px;color:#e8e0d4;line-height:1.8;margin-bottom:12px">Bei Gott hängt deine Errettung nicht von deiner Leistung ab. Jesus zählt nicht, wie oft du versagst — denn er hat bereits für alle Sünden bezahlt.</p>'
+        +'<p style="font-family:\'Lora\',serif;font-size:15px;color:#e8e0d4;line-height:1.8;margin-bottom:12px">Für die, die du getan hast. Und für alle, die du noch tun wirst. <strong style="color:#d4af55">Alle.</strong></p>'
+        +'<p style="font-family:\'Lora\',serif;font-size:16px;color:#d4af55;line-height:1.8;margin-bottom:24px">Also mein Lieber — du kannst so oft daneben liegen wie du eben daneben liegst. Er liebt dich nicht weniger. Mach weiter.</p>'
+        +'<div style="font-size:12px;color:#8a7f6a;font-style:italic">Antippen zum Fortfahren</div></div>';
+      ov.onclick=function(){ov.remove();state.fails=0;};
+    },4500);
+  } else if(failCount<MAX_FAILS){
+    sfxAlarm();
+    var remaining=MAX_FAILS-failCount;
+    ov.innerHTML='<div class="overlay" style="animation:af .3s infinite"><div style="text-align:center;padding:20px">'
+      +'<div style="font-size:50px">🚨</div>'
+      +'<div style="font-family:\'Courier New\',monospace;font-size:18px;color:#fff;font-weight:bold;text-shadow:0 0 15px rgba(255,0,0,.6)">Daneben!</div>'
+      +'<div style="font-family:\'Lora\',serif;font-size:14px;color:#ffcccc;margin-top:6px">Noch '+remaining+' Versuch'+(remaining!==1?'e':'')+'...</div></div></div>';
+    document.body.appendChild(ov);
+    setTimeout(function(){ov.remove();},2000);
+  }
+}
+
+// ─── SCREENS ───────────────────────────────
+function renderLanding(){
+  $('landing').innerHTML='<div style="text-align:center;padding:40px 24px 0">'
+    +'<div id="chest-landing">'+chestSVG(0)+'</div>'
+    +'<h1 class="hf" style="font-size:44px;color:#d4af55;letter-spacing:3px;margin:0 0 6px;animation:glow 3s infinite">DAVID</h1>'
+    +'<h2 class="hf" style="font-size:18px;color:#f0d88a;margin:0 0 6px;letter-spacing:4px;opacity:.8;font-weight:400">SIEBEN SIEGEL</h2>'
+    +'<div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,#d4af55,transparent);margin:16px auto"></div>'
+    +'<p style="color:#8a7f6a;font-size:14px;margin:0 0 32px;line-height:1.7;max-width:340px;display:inline-block">In dieser Truhe liegt etwas für dich.<br>Doch sie ist versiegelt — mit sieben Siegeln.<br>Nur die Wahrheit bricht sie.</p>'
+    +'<button class="pbtn" style="animation:breathe 2.5s infinite" id="btn-start">Siegel brechen</button></div>';
+  $('btn-start').onclick=function(){try{getAudio();}catch(e){}state.screen='quiz';state.step=0;state.fails=0;state.totalFails=0;state.graceShown=false;state.answered=false;show('quiz');renderQuiz();};
+}
+
+function renderQuiz(){
+  var q=QUESTIONS[state.step],total=QUESTIONS.length;
+  state.answered=false;
+  var failDotsH='<div class="fail-counter">';
+  for(var f=0;f<MAX_FAILS;f++){failDotsH+='<div class="fail-dot'+(f<state.fails?' used':'')+'"></div>';}
+  failDotsH+='</div>';
+
+  $('quiz-content').innerHTML='<div class="progress-bar"><div class="progress-fill" style="width:'+(state.step/total*100)+'%"></div></div>'
+    +failDotsH
+    +'<div style="padding:0 20px">'
+    +'<div style="text-align:center;margin-bottom:14px">'
+    +'<span style="color:#8a7f6a;font-size:12px;letter-spacing:2px" class="hf">SIEGEL '+(state.step+1)+' VON '+total+'</span></div>'
+    +'<div id="chest-q">'+chestSVG(state.step)+'</div>'
+    +'<h3 style="color:#e8e0d4;text-align:center;font-size:16px;font-weight:400;margin:16px 0 20px;line-height:1.6">'+q.q+'</h3>'
+    +'<div id="quiz-options" style="display:flex;flex-direction:column;gap:10px"></div>'
+    +'<div id="quiz-explanation"></div>'
+    +'<div id="quiz-next" style="text-align:center;margin-top:20px"></div></div>';
+  updateChest();renderOpts(q);
+}
+
+function updateChest(){var e=$('chest-q');if(e)e.innerHTML=chestSVG(state.step);}
+
+function renderOpts(q){
+  var c=$('quiz-options');c.innerHTML='';
+  var letters='ABCDEFGH';
+  for(var i=0;i<q.opts.length;i++){
+    var b=document.createElement('button');b.className='quiz-btn';b.setAttribute('data-idx',i);
+    b.innerHTML='<span class="letter">'+letters[i]+'</span><span>'+q.opts[i]+'</span>';
+    b.addEventListener('click',(function(idx){return function(){if(!state.answered)handleAnswer(q,idx);};})(i));
+    c.appendChild(b);
+  }
+}
+
+function handleAnswer(q,idx){
+  var btns=document.querySelectorAll('.quiz-btn');
+  if(idx===q.answer){
+    // CORRECT
+    state.answered=true;
+    sfxCorrect();
+    btns.forEach(function(b,i){if(i===idx)b.classList.add('correct');else b.classList.add('disabled');});
+    setTimeout(function(){sfxSealBreak();},400);
+    // Show explanation
+    showExplanation(q,true);
+    // Show next button
+    setTimeout(function(){
+      var nb=$('quiz-next');
+      if(nb){
+        var isLast=state.step+1>=QUESTIONS.length;
+        nb.innerHTML='<button class="pbtn" id="btn-next" style="animation:popIn .4s ease-out;font-size:14px;padding:12px 28px">'+(isLast?'Truhe öffnen ✨':'Weiter →')+'</button>';
+        $('btn-next').onclick=function(){advanceStep();};
+      }
+    },600);
+  } else {
+    // WRONG
+    sfxWrong();
+    state.fails++;state.totalFails++;
+    btns[idx].classList.add('wrong');
+    // Update fail dots
+    var dots=document.querySelectorAll('.fail-dot');
+    dots.forEach(function(d,i){if(i<state.fails)d.classList.add('used');});
+    // Show alarm
+    showAlarm(state.fails);
+    setTimeout(function(){btns[idx].classList.remove('wrong');},2200);
+  }
+}
+
+function showExplanation(q,isCorrect){
+  var el=$('quiz-explanation');
+  if(!el)return;
+  var versesHtml='';
+  if(q.verses){
+    var vlines=q.verses.split('\n\n');
+    for(var v=0;v<vlines.length;v++){
+      if(vlines[v].trim())versesHtml+='<span class="verse">'+vlines[v]+'</span>';
+    }
+  }
+  el.innerHTML='<div class="explanation">'
+    +'<p>'+nl2br(q.expl)+'</p>'
+    +(versesHtml?'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(212,175,85,.12)">'+versesHtml+'</div>':'')
+    +'</div>';
+}
+
+function advanceStep(){
+  if(state.step+1>=QUESTIONS.length){
+    state.screen='reveal';show('reveal');showConfetti();sfxFanfare();setTimeout(function(){sfxChestOpen();},600);renderReveal();
+  } else {
+    state.step++;renderQuiz();
+  }
+}
+
+function renderReveal(){
+  $('reveal-content').innerHTML='<div style="text-align:center;padding:20px 20px 0">'
+    +'<div id="chest-r">'+chestSVG(QUESTIONS.length)+'</div>'
+    +'<h1 class="hf" style="font-size:28px;color:#d4af55;margin:0 0 8px;animation:glow 2s infinite">Alle Siegel gebrochen!</h1>'
+    +'<p id="rev-sub" style="color:#f0d88a;font-size:16px;margin:0 0 8px;opacity:0">David, die Wahrheit hat dich frei gemacht.</p>'
+    +'<div id="rev-btn" style="opacity:0;margin-top:20px"><button class="pbtn" id="btn-open">Geschenk öffnen 🎁</button></div></div>';
+  setTimeout(function(){var s=$('rev-sub');if(s){s.style.opacity='1';s.style.animation='fadeUp .6s ease-out';}},1500);
+  setTimeout(function(){var b=$('rev-btn');if(b){b.style.opacity='1';b.style.animation='fadeUp .8s ease-out';}$('btn-open').onclick=function(){state.screen='gift';show('gift');renderGift();var cf=document.getElementById('confetti-box');if(cf)cf.remove();};},3000);
+}
+
+function renderGift(){
+  $('gift-content').innerHTML='<div style="padding:16px 16px 0;max-width:480px;margin:0 auto">'
+    +'<div style="background:linear-gradient(135deg,rgba(212,175,85,.1),rgba(212,175,85,.05));border:1px solid rgba(212,175,85,.25);border-radius:20px;padding:24px 20px;text-align:center">'
+    // Header
+    +'<div style="font-size:44px;margin-bottom:8px">🔥</div>'
+    +'<h2 class="hf" style="color:#d4af55;font-size:32px;margin:0 0 4px;letter-spacing:2px">WOK ON FIRE</h2>'
+    +'<p style="color:#f0d88a;font-size:14px;margin:0 0 20px;opacity:.8">Ein Abend, der dir gehört</p>'
+    +'<div style="width:80px;height:1px;background:linear-gradient(90deg,transparent,#d4af55,transparent);margin:0 auto 20px"></div>'
+    // Details
+    +'<div style="text-align:left;padding:0 8px">'
+    +'<div style="background:rgba(0,0,0,.3);border-radius:12px;padding:16px;margin-bottom:16px">'
+    +'<p style="color:#d4af55;font-size:13px;font-family:\'Cinzel\',serif;margin-bottom:10px;letter-spacing:1px">DEIN GUTSCHEIN</p>'
+    +'<p style="color:#e8e0d4;font-size:15px;line-height:1.8;margin-bottom:6px">🍜 <strong>Wok on Fire</strong> — Essen für zwei</p>'
+    +'<p style="color:#c8bfaa;font-size:14px;line-height:1.8;margin-bottom:6px">📅 Termin: Wann immer du möchtest</p>'
+    +'<p style="color:#c8bfaa;font-size:14px;line-height:1.8">🎂 Zum Geburtstag – weil du es wert bist</p>'
+    +'</div>'
+    // Message
+    +'<div style="background:rgba(0,0,0,.3);border-radius:12px;padding:16px;margin-bottom:16px">'
+    +'<p style="color:#e8e0d4;font-size:15px;line-height:1.8;font-style:italic;margin-bottom:12px">David, du bist nicht das, was deine Ängste dir sagen. Du bist das, was Gottes Wort über dich sagt:</p>'
+    +'<p style="color:#d4af55;font-size:14px;line-height:1.8;margin-bottom:4px">✨ Gerecht gemacht — nicht auf Bewährung.</p>'
+    +'<p style="color:#d4af55;font-size:14px;line-height:1.8;margin-bottom:4px">✨ Für immer vollkommen — nicht schrittweise.</p>'
+    +'<p style="color:#d4af55;font-size:14px;line-height:1.8;margin-bottom:4px">✨ Gottes Gerechtigkeit — nicht Gottes Projekt.</p>'
+    +'<p style="color:#d4af55;font-size:14px;line-height:1.8">✨ Vollständig bezahlt — ohne offene Posten.</p>'
+    +'</div>'
+    // Sign-off
+    +'<div style="text-align:center;padding:12px 0 4px;border-top:1px solid rgba(212,175,85,.12)">'
+    +'<p class="hf" style="color:#d4af55;font-size:14px;margin:0 0 4px;letter-spacing:1px">Geschenkt mit Liebe von</p>'
+    +'<p class="hf" style="color:#f0d88a;font-size:20px;margin:0">Marco ❤️</p>'
+    +'<p style="color:#6a6050;font-size:11px;margin-top:12px;font-style:italic">Alles Gute zum Geburtstag! 🎉</p>'
+    +'</div></div></div></div>';
+}
+
+// ─── INIT ──────────────────────────────────
+function init(){
+  $('app').innerHTML='<div class="screen active" id="landing"></div>'
+    +'<div class="screen" id="quiz"><div id="quiz-content"></div></div>'
+    +'<div class="screen" id="reveal"><div id="reveal-content"></div></div>'
+    +'<div class="screen" id="gift"><div id="gift-content"></div></div>';
+  renderLanding();show('landing');
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
